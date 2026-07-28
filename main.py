@@ -4,6 +4,8 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formataddr
+from dotenv import load_dotenv
+load_dotenv()
 
 # === Config ===
 contacts_file = "contacts.xlsx"
@@ -12,9 +14,8 @@ log_file = "sent_log.csv"
 resume_link = "https://drive.google.com/file/d/1t1_dPyJhAqNL0vvda9lzzcyqUYXjIIl2/view?usp=sharing"
 linkedin = "https://www.linkedin.com/in/sahilt02"
 github = "https://www.github.com/soulsahil"
-sender_email = "tiwarisahil14@gmail.com"
-password = "cqeg dzlf brwk ugcb"  # Gmail App Password (remove spaces)
-
+sender_email = os.getenv("EMAIL")
+password = os.getenv("EMAIL_PASSWORD")
 
 smtp_server = "smtp.gmail.com"
 port = 587
