@@ -4,6 +4,8 @@ from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.utils import formataddr
+from dotenv import load_dotenv
+load_dotenv()
 
 # === Config ===
 contacts_file = "contacts.xlsx"
@@ -12,12 +14,12 @@ log_file = "sent_log.csv"
 resume_link = "https://drive.google.com/file/d/1t1_dPyJhAqNL0vvda9lzzcyqUYXjIIl2/view?usp=sharing"
 linkedin = "https://www.linkedin.com/in/sahilt02"
 github = "https://www.github.com/soulsahil"
-sender_email = "tiwarisahil14@gmail.com"
-password = "cqeg dzlf brwk ugcb"  # Gmail App Password (remove spaces)
+sender_email = os.getenv("EMAIL")
+password = os.getenv("EMAIL_PASSWORD")
 
 
-smtp_server = "smtp.gmail.com"
-port = 587
+smtp_server = "my.space.email"
+port = 465
 
 # === Load data ===
 df = pd.read_excel(contacts_file)
@@ -36,8 +38,7 @@ if os.path.exists(log_file):
 
 context = ssl.create_default_context()
 
-with smtplib.SMTP(smtp_server, port) as server:
-    server.starttls(context=context)
+with smtplib.SMTP_SSL(smtp_server, port, context=context) as server:
     server.login(sender_email, password)
 
     sent_count = 0
@@ -57,39 +58,76 @@ with smtplib.SMTP(smtp_server, port) as server:
         text_body = f"""
 Hi {name},
 
-I recently applied to some Software Engineer roles at {company} and wanted to reach out because I am genuinely interested in joining the team. My background is in backend development and automation, currently at Accenture, and previously as a founding engineer building RabbitMQ-based async workflows and AWS services to improve operational efficiency and production reliability.
+Most {title}s I talk to are running 4–6 different tools between finding a lead and sending the email.
 
-The role seems very aligned with the kind of work I enjoy doing, so I’d love to be considered if my profile looks relevant. Would you be open to meeting up? I can, of course, work around your schedule.
+Apollo → Export → Enrich → CRM → Sequencer.
 
-Thanks for your time.
+Someone on the team usually ends up being the glue between all of them.
 
-Best regards,  
-Sahil Tiwari  
-LinkedIn: {linkedin} 
-Resume: {resume_link}
+We're building Scout to remove that completely.
+
+One workspace where AI agents handle research, enrichment and outreach while carrying context through every step, while you only approve the decisions that matter.
+
+Would you be open to a quick 15-minute chat?
+
+Or simply reply "send it" and I'll send over a 60-second demo.
+
+Cheers,
+
+Darshan
+https://runscout.app
 """
 
         # HTML body
         html_body = f"""
+<!DOCTYPE html>
 <html>
-  <body>
-    <p>Hi {name},</p>
+<head>
+<meta charset="UTF-8">
+</head>
 
-    <p>I recently applied to the Software Engineer role at {company} and wanted to reach out because I am genuinely interested in joining the team. <br/><br/>My background is in backend development and automation, currently at Accenture, and previously as a founding engineer building RabbitMQ-based async workflows and AWS services to improve operational efficiency and production reliability.<br/><br/>
+<body style="font-family:Arial,Helvetica,sans-serif;font-size:15px;color:#222;line-height:1.6;">
 
-The role feels strongly aligned with the kind of work I enjoy doing, so I’d really appreciate being considered if my profile looks relevant. Happy to share more details if helpful.
+<p>Hi {name},</p>
 
-<br/><br/>Thanks for your time.</p>
-
-    <p style="color:#000000; margin:0;">
-Regards,<br/>
-Sahil Tiwari<br/>
-LinkedIn: <a href="https://www.linkedin.com/in/sahilt02" target="_blank">https://www.linkedin.com/in/sahilt02</a><br/>
-Resume: <a href="https://drive.google.com/file/d/1t1_dPyJhAqNL0vvda9lzzcyqUYXjIIl2/view?usp=sharing" target="_blank">
-https://drive.google.com/file/d/1t1_dPyJhAqNL0vvda9lzzcyqUYXjIIl2/view?usp=sharing
-</a>
+<p>
+Most <b>{title}</b>s I talk to are running 4–6 different tools between finding a lead and sending the email.
 </p>
-  </body>
+
+<p>
+Apollo → Export → Enrich → CRM → Sequencer.
+</p>
+
+<p>
+And someone on the team usually ends up being the glue between all of them.
+</p>
+
+<p>
+We're building <b>Scout</b> to remove that completely.
+</p>
+
+<p>
+One workspace where a team of AI agents handles research, enrichment and outreach while carrying context through every step, while you only approve the decisions that matter.
+</p>
+
+<p>
+Would you be open to a quick 15-minute chat?
+</p>
+
+<p>
+Or just reply with <b>"send it"</b> and I'll send over a 60-second demo.
+</p>
+
+<p>
+Cheers,<br><br>
+
+<b>Darshan</b><br>
+
+<a href="https://runscout.app">runscout.app</a>
+
+</p>
+
+</body>
 </html>
 """
 
@@ -120,4 +158,5 @@ https://drive.google.com/file/d/1t1_dPyJhAqNL0vvda9lzzcyqUYXjIIl2/view?usp=shari
             break
 
         # wait before next email
-        time.sleep(random.randint(30, 60))
+        delay = random.randint(45, 120)
+        time.sleep(delay)
